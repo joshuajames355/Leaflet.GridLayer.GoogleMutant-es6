@@ -62,7 +62,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 
 			this._initMutant();
 
-			map.on('viewreset', this._reset, this);
+			if (!this._map) { return; }
 			if (this.options.updateWhenIdle) {
 				map.on('moveend', this._update, this);
 			} else {
@@ -73,6 +73,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 
 			//handle layer being added to a map for which there are no Google tiles at the given zoom
 			google.maps.event.addListenerOnce(this._mutant, 'idle', function () {
+				if (!this._map) { return; }
 				this._checkZoomLevels();
 				this._mutantIsReady = true;
 			}.bind(this));
@@ -81,7 +82,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 			map._controlCorners.bottomright.style.marginBottom = '20px';
 			map._controlCorners.bottomleft.style.marginBottom = '20px';
 
-			this._reset();
 			this._update();
 
 		}.bind(this));
@@ -93,7 +93,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		map._container.removeChild(this._mutantContainer);
 
 		google.maps.event.clearListeners(this._mutant, 'idle');
-		map.off('viewreset', this._reset, this);
 		map.off('move', this._update, this);
 		map.off('moveend', this._update, this);
 		map.off('zoomend', this._handleZoomAnim, this);
@@ -387,10 +386,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 			this.options.maxNativeZoom = zoomLevel;
 			this._resetView();
 		}
-	},
-
-	_reset: function () {
-		this._initContainer();
 	},
 
 	_update: function () {
