@@ -42,6 +42,15 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 			}, 500);
 		});
 
+		this.once('spawned', function () {
+			if (this._subLayers) {
+				//restore previously added google layers
+				for (var layerName in this._subLayers) {
+					this._subLayers[layerName].setMap(this._mutant);
+				}
+			}
+		});
+
 		// Couple data structures indexed by tile key
 		this._tileCallbacks = {};	// Callbacks for promises for tiles that are expected
 		this._freshTiles = {};	// Tiles from the mutant which haven't been requested yet
@@ -83,12 +92,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 			this._reset();
 			this._update();
 
-			if (this._subLayers) {
-				//restore previously added google layers
-				for (var layerName in this._subLayers) {
-					this._subLayers[layerName].setMap(this._mutant);
-				}
-			}
 		}.bind(this));
 	},
 
@@ -120,26 +123,34 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		e.style.height = size.y + 'px';
 	},
 
-
+	// @method addGoogleLayer(name: String, options?: Object): this
+	// Adds layer with the given name and options to the google Map instance.
+	// `name`: one of the google maps API layers, with it's constructor available in `google.maps` object.
+	// currently following values supported: 'TrafficLayer', 'TransitLayer', 'BicyclingLayer'.
+	// `options`: see https://developers.google.com/maps/documentation/javascript/reference/map
 	addGoogleLayer: function (googleLayerName, options) {
 		if (!this._subLayers) this._subLayers = {};
-		return this._GAPIPromise.then(function () {
+		this._GAPIPromise.then(function () {
 			var Constructor = google.maps[googleLayerName];
 			var googleLayer = new Constructor(options);
-			googleLayer.setMap(this._mutant);
+			if (this._mutant) { googleLayer.setMap(this._mutant); } // otherwise it will be added on 'spawned'
 			this._subLayers[googleLayerName] = googleLayer;
-			return googleLayer;
 		}.bind(this));
+		return this;
 	},
 
+	// @method removeGoogleLayer(name: String): this
+	// Removes layer with the given name from the google Map instance.
 	removeGoogleLayer: function (googleLayerName) {
-		var googleLayer = this._subLayers && this._subLayers[googleLayerName];
-		if (!googleLayer) return;
-
-		googleLayer.setMap(null);
-		delete this._subLayers[googleLayerName];
+		this._GAPIPromise.then(function () {
+			var googleLayer = this._subLayers && this._subLayers[googleLayerName];
+			if (googleLayer) {
+				googleLayer.setMap(null);
+				delete this._subLayers[googleLayerName];
+			}
+		}.bind(this));
+		return this;
 	},
-
 
 	_initMutantContainer: function () {
 		if (!this._mutantContainer) {
