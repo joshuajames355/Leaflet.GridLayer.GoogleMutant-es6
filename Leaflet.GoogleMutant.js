@@ -92,7 +92,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		this._observer.disconnect();
 		map._container.removeChild(this._mutantContainer);
 
-		google.maps.event.clearListeners(map, 'idle');
 		google.maps.event.clearListeners(this._mutant, 'idle');
 		map.off('viewreset', this._reset, this);
 		map.off('move', this._update, this);
