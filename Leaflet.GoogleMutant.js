@@ -166,10 +166,8 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 			return;
 		}
 
-		this._mutantCenter = new google.maps.LatLng(0, 0);
-
 		var map = new google.maps.Map(this._mutantContainer, {
-			center: this._mutantCenter,
+			center: {lat: 0, lng: 0},
 			zoom: 0,
 			tilt: 0,
 			mapTypeId: this.options.type,
