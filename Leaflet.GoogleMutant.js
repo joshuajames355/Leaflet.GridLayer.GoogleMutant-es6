@@ -145,7 +145,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 			this._mutantContainer.id = '_MutantContainer_' + L.Util.stamp(this._mutantContainer);
 			this._mutantContainer.style.zIndex = '800'; //leaflet map pane at 400, controls at 1000
 			this._mutantContainer.style.pointerEvents = 'none';
-			
+
 			L.DomEvent.off(this._mutantContainer);
 
 		}
@@ -233,12 +233,12 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 					if (node.style.backgroundColor === 'white') {
 						L.DomUtil.remove(node);
 					}
-                    
+
 					// Check for, and remove, the "For development purposes only" divs on the aerial/hybrid tiles.
 					if (node.textContent.indexOf('For development purposes only') === 0) {
 						L.DomUtil.remove(node);
 					}
-                    
+
 					// Check for, and remove, the "Sorry, we have no imagery here"
 					// empty <div>s. The [style*="text-align: center"] selector
 					// avoids matching the attribution notice.
@@ -281,7 +281,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 				x: match[2],
 				y: match[3]
 			};
-			if (this._imagesPerTile > 1) { 
+			if (this._imagesPerTile > 1) {
 				imgNode.style.zIndex = 1;
 				sublayer = 1;
 			}
@@ -310,9 +310,9 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 
 			if (key in this._tileCallbacks && this._tileCallbacks[key]) {
 // console.log('Fullfilling callback ', key);
-				//fullfill most recent tileCallback because there maybe callbacks that will never get a 
+				//fullfill most recent tileCallback because there maybe callbacks that will never get a
 				//corresponding mutation (because map moved to quickly...)
-				this._tileCallbacks[key].pop()(imgNode); 
+				this._tileCallbacks[key].pop()(imgNode);
 				if (!this._tileCallbacks[key].length) { delete this._tileCallbacks[key]; }
 			} else {
 				if (this._tiles[tileKey]) {
@@ -385,7 +385,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 	},
 
 	_setMaxNativeZoom: function (zoomLevel) {
-		if (zoomLevel != this.options.maxNativeZoom) {
+		if (zoomLevel !== this.options.maxNativeZoom) {
 			this.options.maxNativeZoom = zoomLevel;
 			this._resetView();
 		}
@@ -408,9 +408,9 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 			var mutantZoom = this._mutant.getZoom();
 
 			//ignore fractional zoom levels
-			if (!fractionalLevel && (zoom != mutantZoom)) {
+			if (!fractionalLevel && (zoom !== mutantZoom)) {
 				this._mutant.setZoom(zoom);
-							
+
 				if (this._mutantIsReady) this._checkZoomLevels();
 				//else zoom level check will be done later by 'idle' handler
 			}
@@ -462,11 +462,11 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 
 		for (var i=0; i<this._imagesPerTile; i++) {
 			var key2 = key + '/' + i;
-			if (key2 in this._freshTiles) { 
+			if (key2 in this._freshTiles) {
 				var tileBounds = this._map && this._keyToBounds(key);
-				var stillVisible = this._map && tileBounds.overlaps(gMapBounds) && (tileZoom == gZoom);
+				var stillVisible = this._map && tileBounds.overlaps(gMapBounds) && (tileZoom === gZoom);
 
-				if (!stillVisible) delete this._freshTiles[key2]; 
+				if (!stillVisible) delete this._freshTiles[key2];
 //				console.log('Prunning of ', key, (!stillVisible))
 			}
 		}
