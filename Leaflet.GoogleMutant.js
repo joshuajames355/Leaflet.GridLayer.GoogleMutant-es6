@@ -6,15 +6,7 @@
 // 🍂extends GridLayer
 L.GridLayer.GoogleMutant = L.GridLayer.extend({
 	options: {
-		minZoom: 0,
 		maxZoom: 23,
-		tileSize: 256,
-		subdomains: 'abc',
-		errorTileUrl: '',
-		attribution: '',	// The mutant container will add its own attribution anyways.
-		opacity: 1,
-		continuousWorld: false,
-		noWrap: false,
 		// 🍂option type: String = 'roadmap'
 		// Google's map type. Valid values are 'roadmap', 'satellite' or 'terrain'. 'hybrid' is not really supported.
 		type: 'roadmap',
@@ -112,10 +104,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 			map._controlCorners.bottomright.style.marginBottom = '0em';
 			map._controlCorners.bottomleft.style.marginBottom = '0em';
 		}
-	},
-
-	getAttribution: function () {
-		return this.options.attribution;
 	},
 
 	setElementSize: function (e, size) {
