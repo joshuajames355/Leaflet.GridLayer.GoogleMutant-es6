@@ -58,11 +58,11 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 
 		this._GAPIPromise.then(function () {
 			this._ready = true;
-			this._map = map;
 
 			this._initMutant();
 
-			if (!this._map) { return; }
+			map = this._map;
+			if (!map) { return; }
 			if (this.options.updateWhenIdle) {
 				map.on('moveend', this._update, this);
 			} else {
@@ -89,8 +89,9 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 	onRemove: function (map) {
 		L.GridLayer.prototype.onRemove.call(this, map);
 		this._observer.disconnect();
-		map._container.removeChild(this._mutantContainer);
+		this._mutantContainer.remove();
 
+		if (!this._mutant) { return; }
 		google.maps.event.clearListeners(this._mutant, 'idle');
 		map.off('move', this._update, this);
 		map.off('moveend', this._update, this);
@@ -155,8 +156,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 	},
 
 	_initMutant: function () {
-		if (!this._ready || !this._mutantContainer) return;
-
 		if (this._mutant) {
 			// reuse old _mutant, just make sure it has the correct size
 			this._resize();
@@ -416,7 +415,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 			this._mutantContainer.style.height === size.y)
 			return;
 		this.setElementSize(this._mutantContainer, size);
-		if (!this._mutant) return;
 		google.maps.event.trigger(this._mutant, 'resize');
 	},
 
