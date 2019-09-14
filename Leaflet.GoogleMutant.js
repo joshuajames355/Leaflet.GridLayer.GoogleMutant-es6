@@ -63,11 +63,11 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 
 			map = this._map;
 			if (!map) { return; }
-			if (this.options.updateWhenIdle) {
-				map.on('moveend', this._update, this);
-			} else {
-				map.on('move', this._update, this);
-			}
+			var moveevent = this.options.updateWhenIdle ? 'moveend' : 'move';
+			map.on(moveevent, this._update, this);
+			this.once('remove', function () {
+				this._map.off(moveevent,this._update, this);
+			});
 			//handle layer being added to a map for which there are no Google tiles at the given zoom
 			google.maps.event.addListenerOnce(this._mutant, 'idle', function () {
 				if (!this._map) { return; }
@@ -88,12 +88,8 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		L.GridLayer.prototype.onRemove.call(this, map);
 		this._observer.disconnect();
 		this._mutantContainer.remove();
-
 		if (!this._mutant) { return; }
 		google.maps.event.clearListeners(this._mutant, 'idle');
-		map.off('move', this._update, this);
-		map.off('moveend', this._update, this);
-
 		if (map._controlCorners) {
 			map._controlCorners.bottomright.style.marginBottom = '0em';
 			map._controlCorners.bottomleft.style.marginBottom = '0em';
