@@ -68,8 +68,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 			} else {
 				map.on('move', this._update, this);
 			}
-			map.on('resize', this._resize, this);
-
 			//handle layer being added to a map for which there are no Google tiles at the given zoom
 			google.maps.event.addListenerOnce(this._mutant, 'idle', function () {
 				if (!this._map) { return; }
@@ -95,17 +93,11 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		google.maps.event.clearListeners(this._mutant, 'idle');
 		map.off('move', this._update, this);
 		map.off('moveend', this._update, this);
-		map.off('resize', this._resize, this);
 
 		if (map._controlCorners) {
 			map._controlCorners.bottomright.style.marginBottom = '0em';
 			map._controlCorners.bottomleft.style.marginBottom = '0em';
 		}
-	},
-
-	setElementSize: function (e, size) {
-		e.style.width = size.x + 'px';
-		e.style.height = size.y + 'px';
 	},
 
 	// @method addGoogleLayer(name: String, options?: Object): this
@@ -150,7 +142,9 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		this._map.getContainer().appendChild(this._mutantContainer);
 
 		this.setOpacity(this.options.opacity);
-		this.setElementSize(this._mutantContainer, this._map.getSize());
+		var style = this._mutantContainer.style;
+		style.width = '100%';
+		style.height = '100%';
 
 		this._attachObserver(this._mutantContainer);
 	},
@@ -158,7 +152,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 	_initMutant: function () {
 		if (this._mutant) {
 			// reuse old _mutant, just make sure it has the correct size
-			this._resize();
 			return;
 		}
 
@@ -407,15 +400,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		}
 
 		L.GridLayer.prototype._update.call(this);
-	},
-
-	_resize: function () {
-		var size = this._map.getSize();
-		if (this._mutantContainer.style.width === size.x &&
-			this._mutantContainer.style.height === size.y)
-			return;
-		this.setElementSize(this._mutantContainer, size);
-		google.maps.event.trigger(this._mutant, 'resize');
 	},
 
 	// Agressively prune _freshtiles when a tile with the same key is removed,
