@@ -68,7 +68,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 			} else {
 				map.on('move', this._update, this);
 			}
-			map.on('zoomend', this._handleZoomAnim, this);
 			map.on('resize', this._resize, this);
 
 			//handle layer being added to a map for which there are no Google tiles at the given zoom
@@ -95,7 +94,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		google.maps.event.clearListeners(this._mutant, 'idle');
 		map.off('move', this._update, this);
 		map.off('moveend', this._update, this);
-		map.off('zoomend', this._handleZoomAnim, this);
 		map.off('resize', this._resize, this);
 
 		if (map._controlCorners) {
@@ -420,15 +418,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		this.setElementSize(this._mutantContainer, size);
 		if (!this._mutant) return;
 		google.maps.event.trigger(this._mutant, 'resize');
-	},
-
-	_handleZoomAnim: function () {
-		if (!this._mutant) return;
-		var center = this._map.getCenter();
-		var _center = new google.maps.LatLng(center.lat, center.lng);
-
-		this._mutant.setCenter(_center);
-		this._mutant.setZoom(Math.round(this._map.getZoom()));
 	},
 
 	// Agressively prune _freshtiles when a tile with the same key is removed,
