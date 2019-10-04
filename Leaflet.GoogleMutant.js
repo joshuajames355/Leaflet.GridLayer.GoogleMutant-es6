@@ -25,6 +25,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		L.GridLayer.prototype.initialize.call(this, options);
 
 		this._ready = !!window.google && !!window.google.maps && !!window.google.maps.Map;
+		this._isMounted = true;
 
 		this._GAPIPromise = this._ready ? Promise.resolve(window.google) : new Promise(function (resolve, reject) {
 			var checkCounter = 0;
@@ -56,6 +57,9 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		this._initMutantContainer();
 
 		this._GAPIPromise.then(function () {
+			if (!this._isMounted) {
+				return;
+			}
 			this._ready = true;
 			this._map = map;
 
@@ -98,7 +102,9 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		map._container.removeChild(this._mutantContainer);
 
 		google.maps.event.clearListeners(map, 'idle');
-		google.maps.event.clearListeners(this._mutant, 'idle');
+		if (this._mutant) {
+			google.maps.event.clearListeners(this._mutant, 'idle');
+		}
 		map.off('viewreset', this._reset, this);
 		map.off('move', this._update, this);
 		map.off('moveend', this._update, this);
@@ -109,6 +115,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 			map._controlCorners.bottomright.style.marginBottom = '0em';
 			map._controlCorners.bottomleft.style.marginBottom = '0em';
 		}
+		this._isMounted = false;
 	},
 
 	getAttribution: function () {
@@ -458,6 +465,9 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		var gZoom = this._mutant.getZoom();
 		var tileZoom = key.split(':')[2];
 		var googleBounds = this._mutant.getBounds();
+		if (!googleBounds) {
+			return;
+		}
 		var sw = googleBounds.getSouthWest();
 		var ne = googleBounds.getNorthEast();
 		var gMapBounds = L.latLngBounds([[sw.lat(), sw.lng()], [ne.lat(), ne.lng()]]);
