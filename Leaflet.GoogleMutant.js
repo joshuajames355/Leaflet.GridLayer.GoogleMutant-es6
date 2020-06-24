@@ -17,6 +17,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		L.GridLayer.prototype.initialize.call(this, options);
 
 		this._ready = !!window.google && !!window.google.maps && !!window.google.maps.Map;
+		this._isMounted = true;
 
 		this._GAPIPromise = this._ready ? Promise.resolve(window.google) : new Promise(function (resolve, reject) {
 			var checkCounter = 0;
@@ -57,6 +58,9 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		this._initMutantContainer();
 
 		this._GAPIPromise.then(function () {
+			if (!this._isMounted) {
+				return;
+			}
 			this._ready = true;
 
 			this._initMutant();
@@ -87,13 +91,23 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 	onRemove: function (map) {
 		L.GridLayer.prototype.onRemove.call(this, map);
 		this._observer.disconnect();
-		this._mutantContainer.remove();
-		if (!this._mutant) { return; }
-		google.maps.event.clearListeners(this._mutant, 'idle');
+		map._container.removeChild(this._mutantContainer);
+
+		google.maps.event.clearListeners(map, 'idle');
+		if (this._mutant) {
+			google.maps.event.clearListeners(this._mutant, 'idle');
+		}
+		map.off('viewreset', this._reset, this);
+		map.off('move', this._update, this);
+		map.off('moveend', this._update, this);
+		map.off('zoomend', this._handleZoomAnim, this);
+		map.off('resize', this._resize, this);
+
 		if (map._controlCorners) {
 			map._controlCorners.bottomright.style.marginBottom = '0em';
 			map._controlCorners.bottomleft.style.marginBottom = '0em';
 		}
+		this._isMounted = false;
 	},
 
 	// @method addGoogleLayer(name: String, options?: Object): this
@@ -398,6 +412,33 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		L.GridLayer.prototype._update.call(this);
 	},
 
+	_resize: function () {
+		var size = this._map.getSize();
+		if (this._mutantContainer.style.width === size.x &&
+			this._mutantContainer.style.height === size.y)
+			return;
+		this.setElementSize(this._mutantContainer, size);
+		if (!this._mutant) return;
+		google.maps.event.trigger(this._mutant, 'resize');
+	},
+
+	_handleZoomAnim: function () {
+		if (!this._mutant) return;
+		var center = this._map.getCenter();
+		var _center = new google.maps.LatLng(center.lat, center.lng);
+
+		this._mutant.setCenter(_center);
+		this._mutant.setZoom(Math.round(this._map.getZoom()));
+		const gZoom = this._mutant.getZoom();
+
+		for (var key of Object.keys(this._freshTiles)) {
+			const tileZoom = key.split(':')[2];
+			if (gZoom != tileZoom) {
+				delete this._freshTiles[key]; 
+			}
+		}
+	},
+
 	// Agressively prune _freshtiles when a tile with the same key is removed,
 	// this prevents a problem where Leaflet keeps a loaded tile longer than
 	// GMaps, so that GMaps makes two requests but Leaflet only consumes one,
@@ -412,14 +453,26 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		return L.GridLayer.prototype._removeTile.call(this, key);
 	},
 
+	_getLargeGMapBound: function (googleBounds) {
+		const sw = googleBounds.getSouthWest();
+		const ne = googleBounds.getNorthEast();
+		const swLat = sw.lat();
+		const swLng = sw.lng();
+		const neLat = ne.lat();
+		const neLng = ne.lng();
+		const latDelta = Math.abs(neLat - swLat);
+		const lngDelta = Math.abs(neLng - swLng);
+		return L.latLngBounds([[swLat - latDelta, swLng - lngDelta], [neLat + latDelta, neLng + lngDelta]]);
+	},
+
 	_pruneTile: function (key) {
 		var gZoom = this._mutant.getZoom();
 		var tileZoom = key.split(':')[2];
-		var googleBounds = this._mutant.getBounds();
-		var sw = googleBounds.getSouthWest();
-		var ne = googleBounds.getNorthEast();
-		var gMapBounds = L.latLngBounds([[sw.lat(), sw.lng()], [ne.lat(), ne.lng()]]);
-
+		const googleBounds = this._mutant.getBounds();
+		if (!googleBounds) {
+			return;
+		}
+		const gMapBounds = this._getLargeGMapBound(googleBounds);
 		for (var i=0; i<this._imagesPerTile; i++) {
 			var key2 = key + '/' + i;
 			if (key2 in this._freshTiles) {
