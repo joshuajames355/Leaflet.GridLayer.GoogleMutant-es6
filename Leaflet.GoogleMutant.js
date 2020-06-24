@@ -440,7 +440,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		this._mutant.setZoom(Math.round(this._map.getZoom()));
 		const gZoom = this._mutant.getZoom();
 
-		for (let key of Object.keys(this._freshTiles)) {
+		for (var key of Object.keys(this._freshTiles)) {
 			const tileZoom = key.split(':')[2];
 			if (gZoom != tileZoom) {
 				delete this._freshTiles[key]; 
