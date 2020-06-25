@@ -455,60 +455,60 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 
 		// for (let key of Object.keys(this._freshTiles)) {
                 // IE-compatible code, in ecmascript5:
-                for (var key in Object.keys(this._freshTiles)) {
+		for (var key in Object.keys(this._freshTiles)) {
 			if (gZoom != key.split(':')[2] /* tileZoom */) {
 				delete this._freshTiles[key];
 			}
 		}
 	},
 
-        // Agressively prune _freshtiles when a tile with the same key is removed,
-        // this prevents a problem where Leaflet keeps a loaded tile longer than
-        // GMaps, so that GMaps makes two requests but Leaflet only consumes one,
-        // polluting _freshTiles with stale data.
-        _removeTile: function (key) {
-                if (!this._mutant) return;
+	// Agressively prune _freshtiles when a tile with the same key is removed,
+	// this prevents a problem where Leaflet keeps a loaded tile longer than
+	// GMaps, so that GMaps makes two requests but Leaflet only consumes one,
+	// polluting _freshTiles with stale data.
+	_removeTile: function (key) {
+		if (!this._mutant) return;
 
-                //give time for animations to finish before checking it tile should be pruned
-                setTimeout(this._pruneTile.bind(this, key), 1000);
+		//give time for animations to finish before checking it tile should be pruned
+		setTimeout(this._pruneTile.bind(this, key), 1000);
 
-                return L.GridLayer.prototype._removeTile.call(this, key);
-        },
+		return L.GridLayer.prototype._removeTile.call(this, key);
+	},
 
-        _getLargeGMapBound: function (googleBounds) {
-                var sw = googleBounds.getSouthWest(),
-                    ne = googleBounds.getNorthEast(),
-                    swLat = sw.lat(),
-                    swLng = sw.lng(),
-                    neLat = ne.lat(),
-                    neLng = ne.lng(),
-                    latDelta = Math.abs(neLat - swLat),
-                    lngDelta = Math.abs(neLng - swLng);
+	_getLargeGMapBound: function (googleBounds) {
+		var sw = googleBounds.getSouthWest(),
+		    ne = googleBounds.getNorthEast(),
+		    swLat = sw.lat(),
+		    swLng = sw.lng(),
+		    neLat = ne.lat(),
+		    neLng = ne.lng(),
+		    latDelta = Math.abs(neLat - swLat),
+		    lngDelta = Math.abs(neLng - swLng);
 
-                return L.latLngBounds([[swLat - latDelta, swLng - lngDelta], [neLat + latDelta, neLng + lngDelta]]);
-        },
+		return L.latLngBounds([[swLat - latDelta, swLng - lngDelta], [neLat + latDelta, neLng + lngDelta]]);
+	},
 
-        _pruneTile: function (key) {
-                var gZoom = this._mutant.getZoom(),
-                    tileZoom = key.split(':')[2],
-                    googleBounds = this._mutant.getBounds(),
-                    gMapBounds = this._getLargeGMapBound(googleBounds);
+	_pruneTile: function (key) {
+		var gZoom = this._mutant.getZoom(),
+		    tileZoom = key.split(':')[2],
+		    googleBounds = this._mutant.getBounds(),
+		    gMapBounds = this._getLargeGMapBound(googleBounds);
 
-		        if (!googleBounds) {
-			        return;
-		        }
+		if (!googleBounds) {
+			return;
+		}
 
-                for (var i=0; i<this._imagesPerTile; ++i) {
-                        var key2 = key + '/' + i;
-                        if (key2 in this._freshTiles) {
-                                var tileBounds = this._map && this._keyToBounds(key),
-                                    stillVisible = this._map && tileBounds.overlaps(gMapBounds) && (tileZoom == gZoom);
+		for (var i=0; i<this._imagesPerTile; ++i) {
+			var key2 = key + '/' + i;
+			if (key2 in this._freshTiles) {
+				var tileBounds = this._map && this._keyToBounds(key),
+					stillVisible = this._map && tileBounds.overlaps(gMapBounds) && (tileZoom == gZoom);
 
-                                if (!stillVisible) delete this._freshTiles[key2];
+				if (!stillVisible) delete this._freshTiles[key2];
 //                              console.log('Prunning of ', key, (!stillVisible))
-                        }
-                }
-        }
+			}
+		}
+	}
 });
 
 
