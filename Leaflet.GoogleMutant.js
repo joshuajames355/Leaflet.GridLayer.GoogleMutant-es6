@@ -7,7 +7,7 @@
 L.GridLayer.GoogleMutant = L.GridLayer.extend({
 	options: {
 		minZoom: 0,
-		maxZoom: 23,
+		maxZoom: 21, // can be 23, but ugly if more than maxNativeZoom
 		tileSize: 256,
 		subdomains: 'abc',
 		errorTileUrl: '',
