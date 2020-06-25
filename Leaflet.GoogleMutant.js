@@ -244,12 +244,12 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 					if (node.style.backgroundColor === 'white') {
 						L.DomUtil.remove(node);
 					}
-                    
+
 					// Check for, and remove, the "For development purposes only" divs on the aerial/hybrid tiles.
 					if (node.textContent.indexOf('For development purposes only') === 0) {
 						L.DomUtil.remove(node);
 					}
-                    
+
 					// Check for, and remove, the "Sorry, we have no imagery here"
 					// empty <div>s. The [style*="text-align: center"] selector
 					// avoids matching the attribution notice.
@@ -282,9 +282,9 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 // 			console.log('caught mutated image: ', imgNode.src);
 // 		}
 
-		var coords;
-		var match = imgNode.src.match(this._roadRegexp);
-		var sublayer = 0;
+        var coords,
+		    match = imgNode.src.match(this._roadRegexp),
+		    sublayer = 0;
 
 		if (match) {
 			coords = {
@@ -292,7 +292,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 				x: match[2],
 				y: match[3]
 			};
-			if (this._imagesPerTile > 1) { 
+			if (this._imagesPerTile > 1) {
 				imgNode.style.zIndex = 1;
 				sublayer = 1;
 			}
@@ -321,7 +321,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 
 			if (key in this._tileCallbacks && this._tileCallbacks[key]) {
 // console.log('Fullfilling callback ', key);
-				//fullfill most recent tileCallback because there maybe callbacks that will never get a 
+				//fullfill most recent tileCallback because there maybe callbacks that will never get a
 				//corresponding mutation (because map moved to quickly...)
 				this._tileCallbacks[key].pop()(imgNode); 
 				if (!this._tileCallbacks[key].length) { delete this._tileCallbacks[key]; }
@@ -329,9 +329,10 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 				if (this._tiles[tileKey]) {
 					//we already have a tile in this position (mutation is probably a google layer being added)
 					//replace it
-					var c = this._tiles[tileKey].el;
-					var oldImg = (sublayer === 0) ? c.firstChild : c.firstChild.nextSibling;
-					var cloneImgNode = this._clone(imgNode);
+					var c = this._tiles[tileKey].el,
+					    oldImg = (sublayer === 0) ? c.firstChild : c.firstChild.nextSibling,
+					    cloneImgNode = this._clone(imgNode);
+
 					c.replaceChild(cloneImgNode, oldImg);
 				}
 			}
