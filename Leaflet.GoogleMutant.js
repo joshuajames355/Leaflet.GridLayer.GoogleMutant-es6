@@ -28,8 +28,9 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		this._isMounted = true;
 
 		this._GAPIPromise = this._ready ? Promise.resolve(window.google) : new Promise(function (resolve, reject) {
-			var checkCounter = 0;
-			var intervalId = null;
+			var checkCounter = 0,
+			    intervalId = null;
+
 			intervalId = setInterval(function () {
 				if (checkCounter >= 10) {
 					clearInterval(intervalId);
@@ -39,7 +40,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 					clearInterval(intervalId);
 					return resolve(window.google);
 				}
-				checkCounter++;
+				++checkCounter;
 			}, 500);
 		});
 
@@ -112,8 +113,8 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		map.off('resize', this._resize, this);
 
 		if (map._controlCorners) {
-			map._controlCorners.bottomright.style.marginBottom = '0em';
-			map._controlCorners.bottomleft.style.marginBottom = '0em';
+			map._controlCorners.bottomright.style.marginBottom = 0;
+			map._controlCorners.bottomleft.style.marginBottom = 0;
 		}
 		this._isMounted = false;
 	},
@@ -131,8 +132,9 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 	addGoogleLayer: function (googleLayerName, options) {
 		if (!this._subLayers) this._subLayers = {};
 		return this._GAPIPromise.then(function () {
-			var Constructor = google.maps[googleLayerName];
-			var googleLayer = new Constructor(options);
+			var Constructor = google.maps[googleLayerName],
+			    googleLayer = new Constructor(options);
+
 			googleLayer.setMap(this._mutant);
 			this._subLayers[googleLayerName] = googleLayer;
 			return googleLayer;
@@ -152,9 +154,9 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		if (!this._mutantContainer) {
 			this._mutantContainer = L.DomUtil.create('div', 'leaflet-google-mutant leaflet-top leaflet-left');
 			this._mutantContainer.id = '_MutantContainer_' + L.Util.stamp(this._mutantContainer);
-			this._mutantContainer.style.zIndex = '800'; //leaflet map pane at 400, controls at 1000
+			this._mutantContainer.style.zIndex = 800; //leaflet map pane at 400, controls at 1000
 			this._mutantContainer.style.pointerEvents = 'none';
-			
+
 			L.DomEvent.off(this._mutantContainer);
 
 		}
@@ -196,7 +198,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 
 		google.maps.event.addListenerOnce(map, 'idle', function () {
 			var nodes = this._mutantContainer.querySelectorAll('a');
-			for (var i = 0; i < nodes.length; i++) {
+			for (var i = 0; i < nodes.length; ++i) {
 				nodes[i].style.pointerEvents = 'auto';
 			}
 		}.bind(this));
