@@ -61,7 +61,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 			if (!this._isMounted) {
 				return;
 			}
-
 			this._ready = true;
 			this._map = map;
 
