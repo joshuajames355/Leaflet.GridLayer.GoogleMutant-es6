@@ -446,7 +446,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		// for (let key of Object.keys(this._freshTiles)) {
                 // IE-compatible code, in ecmascript5:
 		for (var key in Object.keys(this._freshTiles)) {
-			if (gZoom != key.split(':')[2] /* tileZoom */) {
+			if (gZoom !== key.split(':')[2] /* tileZoom */) {
 				delete this._freshTiles[key];
 			}
 		}
