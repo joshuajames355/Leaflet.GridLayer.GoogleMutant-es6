@@ -72,14 +72,22 @@ You can also download a static copy from the CDN, or clone this git repo.
 * If you are targeting IE11, then include the following **before** the `script` element that references
 the GoogleMutant javascript file:
 
-```html
-<script src="https://unpkg.com/es6-promise@4.0.5/dist/es6-promise.min.js"></script>
-<script>ES6Promise.polyfill();</script>
-```
+  ```html
+  <script src="https://unpkg.com/es6-promise@4.0.5/dist/es6-promise.min.js"></script>
+  <script>ES6Promise.polyfill();</script>
+  ```
 
-This will polyfill in Javascript Promises for IE.
+  This will polyfill in Javascript Promises for IE.
+
+* Even though imagery exists at zoom levels up to 23, GoogleMutant caps the max zoom level at 21.
+
+  This is to prevent scenarios where detecting imagery at those zooms levels is hard and creates problems (e.g. when zooming in/out close to a the boundary of such hi-res imagery).
+  
+  You can override this (at your own risk!) by using the `maxZoom` option with a value larger than 21.
 
 * GoogleMutant is meant to provide a reliable (and ToC-compliant) way of loading Google Map's tiles into Leaflet, nothing more.
+
+  This means that route finding, geocoding, POI info, streetview, KML support, and in general anything that depends on calls to the Google Maps API are **not** implemented and are **not** a priority.
 
 ## Motivation
 
