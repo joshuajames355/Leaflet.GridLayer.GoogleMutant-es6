@@ -88,13 +88,13 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 				this._mutantIsReady = true;
 			}.bind(this));
 
-			//20px instead of 1em to avoid a slight overlap with google's attribution
-			map._controlCorners.bottomright.style.marginBottom = '20px';
-			map._controlCorners.bottomleft.style.marginBottom = '20px';
-
 			this._update();
 
 		}.bind(this));
+
+		//20px instead of 1em to avoid a slight overlap with google's attribution
+		map._controlCorners.bottomright.style.marginBottom = '20px';
+		map._controlCorners.bottomleft.style.marginBottom = '20px';
 	},
 
 	onRemove: function (map) {
