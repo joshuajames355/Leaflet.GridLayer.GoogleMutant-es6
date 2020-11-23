@@ -164,6 +164,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		var style = this._mutantContainer.style;
 		style.width = '100%';
 		style.height = '100%';
+		style.zIndex = -1;
 
 		this._attachObserver(this._mutantContainer);
 	},
