@@ -29,7 +29,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 
 		this._GAPIPromise = this._ready ? Promise.resolve(window.google) : new Promise(function (resolve, reject) {
 			var checkCounter = 0,
-			    intervalId = null;
+				intervalId = null;
 
 			intervalId = setInterval(function () {
 				if (checkCounter >= 10) {
@@ -88,13 +88,13 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 				this._mutantIsReady = true;
 			}.bind(this));
 
-			//20px instead of 1em to avoid a slight overlap with google's attribution
-			map._controlCorners.bottomright.style.marginBottom = '20px';
-			map._controlCorners.bottomleft.style.marginBottom = '20px';
-
 			this._update();
 
 		}.bind(this));
+
+		//20px instead of 1em to avoid a slight overlap with google's attribution
+		map._controlCorners.bottomright.style.marginBottom = '20px';
+		map._controlCorners.bottomleft.style.marginBottom = '20px';
 	},
 
 	onRemove: function (map) {
@@ -290,8 +290,8 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 // 		}
 
 		var coords,
-		    match = imgNode.src.match(this._roadRegexp),
-		    sublayer = 0;
+			match = imgNode.src.match(this._roadRegexp),
+			sublayer = 0;
 
 		if (match) {
 			coords = {
@@ -337,8 +337,8 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 					//we already have a tile in this position (mutation is probably a google layer being added)
 					//replace it
 					var c = this._tiles[tileKey].el,
-					    oldImg = (sublayer === 0) ? c.firstChild : c.firstChild.nextSibling,
-					    cloneImgNode = this._clone(imgNode);
+						oldImg = (sublayer === 0) ? c.firstChild : c.firstChild.nextSibling,
+						cloneImgNode = this._clone(imgNode);
 
 					c.replaceChild(cloneImgNode, oldImg);
 				}
@@ -351,7 +351,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 
 	createTile: function (coords, done) {
 		var key = this._tileCoordsToKey(coords),
-		    tileContainer = L.DomUtil.create('div');
+			tileContainer = L.DomUtil.create('div');
 
 		tileContainer.dataset.pending = this._imagesPerTile;
 		done = done.bind(this, null, tileContainer);
@@ -392,7 +392,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		//setting the zoom level on the Google map may result in a different zoom level than the one requested
 		//(it won't go beyond the level for which they have data).
 		var zoomLevel = this._map.getZoom(),
-		    gMapZoomLevel = this._mutant.getZoom();
+			gMapZoomLevel = this._mutant.getZoom();
 
 		if (!zoomLevel || !gMapZoomLevel) return;
 
@@ -415,13 +415,13 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		// otherwise tiles may be missed if maxNativeZoom is not yet correctly determined
 		if (this._mutant) {
 			var center = this._map.getCenter(),
-			   _center = new google.maps.LatLng(center.lat, center.lng);
+				_center = new google.maps.LatLng(center.lat, center.lng);
 
 			this._mutant.setCenter(_center);
 
 			var zoom = this._map.getZoom(),
-			    fractionalLevel = zoom !== Math.round(zoom),
-			    mutantZoom = this._mutant.getZoom();
+				fractionalLevel = zoom !== Math.round(zoom),
+				mutantZoom = this._mutant.getZoom();
 
 			//ignore fractional zoom levels
 			if (!fractionalLevel && (zoom !== mutantZoom)) {
@@ -449,14 +449,14 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		if (!this._mutant) return;
 
 		var center = this._map.getCenter(),
-		   _center = new google.maps.LatLng(center.lat, center.lng);
+			_center = new google.maps.LatLng(center.lat, center.lng);
 
 		this._mutant.setCenter(_center);
 		this._mutant.setZoom(Math.round(this._map.getZoom()));
 		var gZoom = this._mutant.getZoom();
 
 		// for (let key of Object.keys(this._freshTiles)) {
-                // IE-compatible code, in ecmascript5:
+		// IE-compatible code, in ecmascript5:
 		for (var key in Object.keys(this._freshTiles)) {
 			if (gZoom !== parseFloat(key.split(':')[2]) /* tileZoom */) { // @utilmind: gZoom is number.
 				delete this._freshTiles[key];
@@ -479,22 +479,22 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 
 	_getLargeGMapBound: function (googleBounds) {
 		var sw = googleBounds.getSouthWest(),
-		    ne = googleBounds.getNorthEast(),
-		    swLat = sw.lat(),
-		    swLng = sw.lng(),
-		    neLat = ne.lat(),
-		    neLng = ne.lng(),
-		    latDelta = Math.abs(neLat - swLat),
-		    lngDelta = Math.abs(neLng - swLng);
+			ne = googleBounds.getNorthEast(),
+			swLat = sw.lat(),
+			swLng = sw.lng(),
+			neLat = ne.lat(),
+			neLng = ne.lng(),
+			latDelta = Math.abs(neLat - swLat),
+			lngDelta = Math.abs(neLng - swLng);
 
 		return L.latLngBounds([[swLat - latDelta, swLng - lngDelta], [neLat + latDelta, neLng + lngDelta]]);
 	},
 
 	_pruneTile: function (key) {
 		var gZoom = this._mutant.getZoom(),
-		    tileZoom = key.split(':')[2],
-		    googleBounds = this._mutant.getBounds(),
-		    gMapBounds = this._getLargeGMapBound(googleBounds);
+			tileZoom = key.split(':')[2],
+			googleBounds = this._mutant.getBounds(),
+			gMapBounds = this._getLargeGMapBound(googleBounds);
 
 		if (!googleBounds) {
 			return;
@@ -504,7 +504,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 			var key2 = key + '/' + i;
 			if (key2 in this._freshTiles) {
 				var tileBounds = this._map && this._keyToBounds(key),
-				    stillVisible = this._map && tileBounds.overlaps(gMapBounds) && (parseFloat(tileZoom) === gZoom); // @utilmind: TileZoom is string, gZoom is number.
+					stillVisible = this._map && tileBounds.overlaps(gMapBounds) && (parseFloat(tileZoom) === gZoom); // @utilmind: TileZoom is string, gZoom is number.
 
 				if (!stillVisible) delete this._freshTiles[key2];
 //                              console.log('Prunning of ', key, (!stillVisible))
