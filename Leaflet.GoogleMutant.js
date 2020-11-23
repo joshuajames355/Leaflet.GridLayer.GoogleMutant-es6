@@ -88,19 +88,20 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 				this._mutantIsReady = true;
 			}.bind(this));
 
-			//20px instead of 1em to avoid a slight overlap with google's attribution
-			map._controlCorners.bottomright.style.marginBottom = '20px';
-			map._controlCorners.bottomleft.style.marginBottom = '20px';
-
 			this._update();
 
 		}.bind(this));
+
+		//20px instead of 1em to avoid a slight overlap with google's attribution
+		map._controlCorners.bottomright.style.marginBottom = '20px';
+		map._controlCorners.bottomleft.style.marginBottom = '20px';
 	},
 
 	onRemove: function (map) {
 		L.GridLayer.prototype.onRemove.call(this, map);
 		this._observer.disconnect();
 		map._container.removeChild(this._mutantContainer);
+		map._controlContainer.removeChild(this._attributesContainer);
 
 		google.maps.event.clearListeners(map, 'idle');
 		if (this._mutant) {
@@ -150,6 +151,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 
 	_initMutantContainer: function () {
 		if (!this._mutantContainer) {
+			this._attributesContainer = L.DomUtil.create('div', 'mutant-attr-container');
 			this._mutantContainer = L.DomUtil.create('div', 'leaflet-google-mutant leaflet-top leaflet-left');
 			this._mutantContainer.id = '_MutantContainer_' + L.Util.stamp(this._mutantContainer);
 			this._mutantContainer.style.zIndex = 800; //leaflet map pane at 400, controls at 1000
@@ -159,11 +161,13 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 
 		}
 		this._map.getContainer().appendChild(this._mutantContainer);
+		this._map._controlContainer.appendChild(this._attributesContainer);
 
 		this.setOpacity(this.options.opacity);
 		var style = this._mutantContainer.style;
 		style.width = '100%';
 		style.height = '100%';
+		style.zIndex = -1;
 
 		this._attachObserver(this._mutantContainer);
 	},
@@ -255,6 +259,14 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 						node.querySelectorAll('div[draggable=false][style*="text-align: center"]'),
 						L.DomUtil.remove
 					);
+
+					// Move Google attributes to leaflet's control container
+					if (
+						node.querySelectorAll('.gmnoprint').length > 0 ||
+						node.querySelectorAll('a[title="Click to see this area on Google Maps"]').length > 0
+					) {
+						this._attributesContainer.appendChild(node);
+					}
 				}
 			}
 		}
