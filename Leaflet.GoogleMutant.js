@@ -101,7 +101,9 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		L.GridLayer.prototype.onRemove.call(this, map);
 		this._observer.disconnect();
 		map._container.removeChild(this._mutantContainer);
-		map._controlContainer.removeChild(this._attributesContainer);
+		if (map._controlContainer) {
+			map._controlContainer.removeChild(this._attributesContainer);
+		}
 
 		google.maps.event.clearListeners(map, 'idle');
 		if (this._mutant) {
