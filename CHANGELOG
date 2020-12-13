@@ -1,3 +1,7 @@
+# v0.10.2
+
+* Fix race condition when pruning a tile when the mutant has been removed from the map.
+
 # v0.10.1
 
 * Tweaks for iOS14 compatibility (by @vonrussel)
