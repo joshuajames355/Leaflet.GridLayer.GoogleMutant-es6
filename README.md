@@ -38,7 +38,7 @@ Include the GMaps JS API in your HTML, plus Leaflet:
 Include the GoogleMutant javascript file:
 
 ```html
-<script src="https://unpkg.com/leaflet.gridlayer.googlemutant@latest/Leaflet.GoogleMutant.js"></script>
+<script src="https://unpkg.com/leaflet.gridlayer.googlemutant@latest/dist/Leaflet.GoogleMutant.js"></script>
 ```
 
 Then, you can create an instance of `L.GridLayer.GoogleMutant` on your JS code:
