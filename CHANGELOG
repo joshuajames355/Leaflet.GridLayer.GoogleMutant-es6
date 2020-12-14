@@ -1,3 +1,7 @@
+# v0.11.1 (2020-12-14)
+
+* Fixed a greedy map invalidation condition when removing/adding mutants to a map.
+
 # v0.11.0 (2020-12-14)
 
 * Refactored a bunch of functionality with a LRU cache
