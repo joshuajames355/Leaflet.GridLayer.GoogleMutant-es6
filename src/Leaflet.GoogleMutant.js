@@ -121,11 +121,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		if (this._mutant) {
 			google.maps.event.clearListeners(this._mutant, "idle");
 		}
-		map.off("viewreset", this._reset, this);
-		map.off("move", this._update, this);
-		map.off("moveend", this._update, this);
-		map.off("zoomend", this._handleZoomAnim, this);
-		map.off("resize", this._resize, this);
+		map.off("move moveend", this._update, this);
 
 		if (map._controlCorners) {
 			map._controlCorners.bottomright.style.marginBottom = 0;
