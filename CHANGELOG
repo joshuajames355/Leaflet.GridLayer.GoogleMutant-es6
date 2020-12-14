@@ -1,3 +1,8 @@
+# v0.11.0 (2020-12-14)
+
+* Refactored a bunch of functionality with a LRU cache
+* Switched from `eslint` to `prettier`.
+
 # v0.10.2
 
 * Fix race condition when pruning a tile when the mutant has been removed from the map.
