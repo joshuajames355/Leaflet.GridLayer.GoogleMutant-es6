@@ -350,6 +350,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		const key = this._tileCoordsToKey(coords),
 			tileContainer = L.DomUtil.create("div");
 
+		tileContainer.style.textAlign = 'left';
 		tileContainer.dataset.pending = this._imagesPerTile;
 		done = done.bind(this, null, tileContainer);
 
