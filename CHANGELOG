@@ -1,3 +1,7 @@
+# v0.11.2 (2020-12-14)
+
+* Fixed tile alignment when map is inside a 'text-align' block.
+
 # v0.11.1 (2020-12-14)
 
 * Fixed a greedy map invalidation condition when removing/adding mutants to a map.
