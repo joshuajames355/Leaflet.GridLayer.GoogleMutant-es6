@@ -2,7 +2,7 @@
 // import commonjs from 'rollup-plugin-commonjs';
 // import builtins from 'rollup-plugin-node-builtins';
 // import globals from 'rollup-plugin-node-globals';
-import buble from '@rollup/plugin-buble';
+import buble from "@rollup/plugin-buble";
 import pkg from "./package.json";
 
 export default [
@@ -29,7 +29,7 @@ export default [
  */`,
 		},
 		plugins: [
-// 			resolve(),
+			// 			resolve(),
 			buble(),
 		],
 

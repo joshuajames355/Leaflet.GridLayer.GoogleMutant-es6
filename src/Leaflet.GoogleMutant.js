@@ -64,7 +64,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 
 		// Couple data structures indexed by tile key
 		this._tileCallbacks = {}; // Callbacks for promises for tiles that are expected
-		this._lru = new LRUMap(100);	// Tile LRU cache
+		this._lru = new LRUMap(100); // Tile LRU cache
 
 		this._imagesPerTile = this.options.type === "hybrid" ? 2 : 1;
 
@@ -74,6 +74,16 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 	onAdd: function (map) {
 		L.GridLayer.prototype.onAdd.call(this, map);
 		this._initMutantContainer();
+
+		// Attribution and logo nodes are not mutated a second time if the
+		// mutant is removed and re-added to the map, hence they are
+		// not cleaned up on layer removal, so they can be added here.
+		if (this._logoContainer) {
+			map._controlCorners.bottomleft.appendChild(this._logoContainer);
+		}
+		if (this._attributionContainer) {
+			map._controlCorners.bottomright.appendChild(this._attributionContainer);
+		}
 
 		GAPIPromise.then(() => {
 			if (!this._isMounted) {
@@ -103,18 +113,17 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 
 			this._update();
 		});
-
-		// 20px instead of 1em to avoid a slight overlap with google's attribution
-		map._controlCorners.bottomright.style.marginBottom = "20px";
-		map._controlCorners.bottomleft.style.marginBottom = "20px";
 	},
 
 	onRemove: function (map) {
 		L.GridLayer.prototype.onRemove.call(this, map);
 		this._observer.disconnect();
 		map._container.removeChild(this._mutantContainer);
-		if (map._controlContainer) {
-			map._controlContainer.removeChild(this._attributesContainer);
+		if (this._logoContainer) {
+			L.DomUtil.remove(this._logoContainer);
+		}
+		if (this._attributionContainer) {
+			L.DomUtil.remove(this._attributionContainer);
 		}
 
 		google.maps.event.clearListeners(map, "idle");
@@ -123,10 +132,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		}
 		map.off("move moveend", this._update, this);
 
-		if (map._controlCorners) {
-			map._controlCorners.bottomright.style.marginBottom = 0;
-			map._controlCorners.bottomleft.style.marginBottom = 0;
-		}
 		this._isMounted = false;
 	},
 
@@ -163,7 +168,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 
 	_initMutantContainer: function () {
 		if (!this._mutantContainer) {
-			this._attributesContainer = L.DomUtil.create("div", "mutant-attr-container");
 			this._mutantContainer = L.DomUtil.create(
 				"div",
 				"leaflet-google-mutant leaflet-top leaflet-left"
@@ -175,7 +179,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 			L.DomEvent.off(this._mutantContainer);
 		}
 		this._map.getContainer().appendChild(this._mutantContainer);
-		this._map._controlContainer.appendChild(this._attributesContainer);
 
 		this.setOpacity(this.options.opacity);
 		const style = this._mutantContainer.style;
@@ -274,13 +277,26 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 						L.DomUtil.remove
 					);
 
-					// Move Google attributes to leaflet's control container
+					// Move Google attributions to leaflet's bottom-right control container
 					if (
 						node.querySelectorAll(".gmnoprint").length > 0 ||
 						node.querySelectorAll('a[title="Click to see this area on Google Maps"]')
 							.length > 0
 					) {
-						this._attributesContainer.appendChild(node);
+						const ctr = (this._attributionContainer = L.DomUtil.create(
+							"div",
+							"leaflet-control leaflet-control-attribution"
+						));
+						L.DomEvent.disableClickPropagation(ctr);
+						ctr.style.height = "14px";
+						this._map._controlCorners.bottomright.appendChild(ctr);
+						ctr.appendChild(node);
+					}
+
+					// Move Google logo to leaflet's bottom-left control container
+					if (node.style.zIndex == 1000000) {
+						this._map._controlCorners.bottomleft.appendChild(node);
+						this._logoContainer = node;
 					}
 				}
 			}
@@ -350,7 +366,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		const key = this._tileCoordsToKey(coords),
 			tileContainer = L.DomUtil.create("div");
 
-		tileContainer.style.textAlign = 'left';
+		tileContainer.style.textAlign = "left";
 		tileContainer.dataset.pending = this._imagesPerTile;
 		done = done.bind(this, null, tileContainer);
 
