@@ -289,6 +289,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 						));
 						L.DomEvent.disableClickPropagation(ctr);
 						ctr.style.height = "14px";
+						ctr.style.background = "none";
 						this._map._controlCorners.bottomright.appendChild(ctr);
 						ctr.appendChild(node);
 					}
