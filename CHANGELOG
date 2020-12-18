@@ -1,3 +1,7 @@
+# v0.11.3 (2020-12-18)
+
+* Fixed visibility/clickability of attribution and logo
+
 # v0.11.2 (2020-12-14)
 
 * Fixed tile alignment when map is inside a 'text-align' block.
