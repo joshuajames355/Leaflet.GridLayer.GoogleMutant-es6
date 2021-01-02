@@ -97,7 +97,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 			if (!this._isMounted) {
 				return;
 			}
-			this._ready = true;
 
 			this._initMutant();
 
@@ -133,12 +132,9 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		if (this._attributionContainer) {
 			L.DomUtil.remove(this._attributionContainer);
 		}
-
-		google.maps.event.clearListeners(map, "idle");
 		if (this._mutant) {
 			google.maps.event.clearListeners(this._mutant, "idle");
 		}
-		map.off("move moveend", this._update, this);
 
 		this._isMounted = false;
 	},
@@ -205,7 +201,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 
 	_initMutant: function () {
 		if (this._mutant) {
-			// reuse old _mutant, just make sure it has the correct size
 			return;
 		}
 
@@ -459,30 +454,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		}
 
 		L.GridLayer.prototype._update.call(this);
-	},
-
-	_resize: function () {
-		const factor = this.options.zoomSnap < 1 ? 1.8 : 1;
-		const size = this._map.getSize().multiplyBy(factor);
-		if (
-			this._mutantContainer.style.width === size.x &&
-			this._mutantContainer.style.height === size.y
-		) {
-			return;
-		}
-		this.setElementSize(this._mutantContainer, size);
-		if (!this._mutant) return;
-		google.maps.event.trigger(this._mutant, "resize");
-	},
-
-	_handleZoomAnim: function () {
-		if (!this._mutant) return;
-
-		const center = this._map.getCenter(),
-			_center = new google.maps.LatLng(center.lat, center.lng);
-
-		this._mutant.setCenter(_center);
-		this._mutant.setZoom(Math.round(this._map.getZoom()));
 	},
 });
 
