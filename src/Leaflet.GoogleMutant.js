@@ -12,30 +12,22 @@ this stuff is worth it, you can buy me a beer in return.
 
 import { LRUMap } from "./lru_map.js";
 
-const GAPIPromise = (function () {
-	let singletonInstance;
-	return function () {
-		if (!singletonInstance) {
-			singletonInstance = new Promise(function (resolve, reject) {
-				let checkCounter = 0,
-					intervalId = null;
+function waitForAPI(callback, context) {
+	let checkCounter = 0,
+		intervalId = null;
 
-				intervalId = setInterval(function () {
-					if (checkCounter >= 20) {
-						clearInterval(intervalId);
-						return reject(new Error("window.google not found after 10 seconds"));
-					}
-					if (!!window.google && !!window.google.maps && !!window.google.maps.Map) {
-						clearInterval(intervalId);
-						return resolve(window.google);
-					}
-					++checkCounter;
-				}, 500);
-			});
+	intervalId = setInterval(function () {
+		if (checkCounter >= 20) {
+			clearInterval(intervalId);
+			throw new Error("window.google not found after 10 seconds");
 		}
-		return singletonInstance;
-	};
-})();
+		if (!!window.google && !!window.google.maps && !!window.google.maps.Map) {
+			clearInterval(intervalId);
+			callback.call(context);
+		}
+		++checkCounter;
+	}, 500);
+};
 
 // 🍂class GridLayer.GoogleMutant
 // 🍂extends GridLayer
@@ -82,7 +74,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 			map._controlCorners.bottomright.appendChild(this._attributionContainer);
 		}
 
-		GAPIPromise().then(() => {
+		waitForAPI(() => {
 			this._initMutant();
 
 			map = this._map;
