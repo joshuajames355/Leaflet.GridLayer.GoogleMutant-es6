@@ -59,15 +59,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 	initialize: function (options) {
 		L.GridLayer.prototype.initialize.call(this, options);
 
-		this.once("spawned", function () {
-			if (this._subLayers) {
-				//restore previously added google layers
-				for (var layerName in this._subLayers) {
-					this._subLayers[layerName].setMap(this._mutant);
-				}
-			}
-		});
-
 		// Couple data structures indexed by tile key
 		this._tileCallbacks = {}; // Callbacks for promises for tiles that are expected
 		this._lru = new LRUMap(100); // Tile LRU cache
@@ -138,12 +129,10 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 	// `options`: see https://developers.google.com/maps/documentation/javascript/reference/map
 	addGoogleLayer: function (googleLayerName, options) {
 		if (!this._subLayers) this._subLayers = {};
-		GAPIPromise().then(() => {
+		this.whenReady(() => {
 			var Constructor = google.maps[googleLayerName];
 			var googleLayer = new Constructor(options);
-			if (this._mutant) {
-				googleLayer.setMap(this._mutant);
-			} // otherwise it will be added on 'spawned'
+			googleLayer.setMap(this._mutant);
 			this._subLayers[googleLayerName] = googleLayer;
 		});
 		return this;
@@ -152,7 +141,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 	// 🍂method removeGoogleLayer(name: String): this
 	// Removes layer with the given name from the google Map instance.
 	removeGoogleLayer: function (googleLayerName) {
-		GAPIPromise().then(() => {
+		this.whenReady(() => {
 			var googleLayer = this._subLayers && this._subLayers[googleLayerName];
 			if (googleLayer) {
 				googleLayer.setMap(null);
@@ -446,6 +435,18 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		}
 
 		L.GridLayer.prototype._update.call(this);
+	},
+
+	// @method whenReady(fn: Function, context?: Object): this
+	// Runs the given function `fn` when the mutant gets initialized, or immediately
+	// if it's already initialized, optionally passing a function context.
+	whenReady: function (callback, context) {
+		if (this._mutant) {
+			callback.call(context || this, {target: this});
+		} else {
+			this.on("spawned", callback, context);
+		}
+		return this;
 	},
 });
 
