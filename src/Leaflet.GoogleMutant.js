@@ -192,8 +192,8 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		const style = this._mutantContainer.style;
 		if (this.options.zoomSnap < 1) {
 			// Fractional zoom needs a bigger mutant container in order to load more (smaller) tiles
-			style.width = "150%";
-			style.height = "150%";
+			style.width = "180%";
+			style.height = "180%";
 		} else {
 			style.width = "100%";
 			style.height = "100%";
@@ -462,7 +462,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 	},
 
 	_resize: function () {
-		const factor = this.options.zoomSnap < 1 ? 1.5 : 1;
+		const factor = this.options.zoomSnap < 1 ? 1.8 : 1;
 		const size = this._map.getSize().multiplyBy(factor);
 		if (
 			this._mutantContainer.style.width === size.x &&
