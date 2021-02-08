@@ -1,3 +1,8 @@
+# v0.12.0
+
+* Wrap GAPIPromise into a Singleton pattern (by @louisnow), should fix race conditions when loading JS libraries in weird orders or using bundlers or so
+* Load more offscreen tiles when fractional zoom is enabled (150%→180%) to prevent artifacts
+
 # v0.11.3 (2020-12-18)
 
 * Fixed visibility/clickability of attribution and logo
