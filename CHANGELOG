@@ -1,3 +1,7 @@
+# v0.12.1
+
+* Rebuilt; dist script should be up-to-date in CDNs.
+
 # v0.12.0
 
 * Wrap GAPIPromise into a Singleton pattern (by @louisnow), should fix race conditions when loading JS libraries in weird orders or using bundlers or so
