@@ -27,7 +27,7 @@ function waitForAPI(callback, context) {
 		}
 		++checkCounter;
 	}, 500);
-};
+}
 
 // 🍂class GridLayer.GoogleMutant
 // 🍂extends GridLayer
@@ -429,7 +429,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 	// if it's already initialized, optionally passing a function context.
 	whenReady: function (callback, context) {
 		if (this._mutant) {
-			callback.call(context || this, {target: this});
+			callback.call(context || this, { target: this });
 		} else {
 			this.on("spawned", callback, context);
 		}
