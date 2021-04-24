@@ -152,7 +152,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 
 		this.setOpacity(this.options.opacity);
 		const style = this._mutantContainer.style;
-		if (this.options.zoomSnap < 1) {
+		if (this._map.options.zoomSnap < 1) {
 			// Fractional zoom needs a bigger mutant container in order to load more (smaller) tiles
 			style.width = "180%";
 			style.height = "180%";
