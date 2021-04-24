@@ -106,8 +106,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 				this._checkZoomLevels();
 				this._mutantIsReady = true;
 			});
-
-			this._update();
 		});
 	},
 
@@ -214,6 +212,8 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 				nodes[i].style.pointerEvents = "auto";
 			}
 		});
+
+		this._update();
 
 		// 🍂event spawned
 		// Fired when the mutant has been created.
