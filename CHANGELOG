@@ -1,3 +1,7 @@
+# v0.13.2 (2021-04-24)
+
+* Added a .npmignore file to shrink the size of the NPM package
+
 # v0.13.0 (2021-04-24)
 
 * Implemented `whenReady` method (by @johnd0e)
