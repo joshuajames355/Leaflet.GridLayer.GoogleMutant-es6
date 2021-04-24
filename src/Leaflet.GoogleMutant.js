@@ -438,11 +438,11 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		}
 	},
 
-	_update: function () {
+	_update: function (center) {
 		// zoom level check needs to happen before super's implementation (tile addition/creation)
 		// otherwise tiles may be missed if maxNativeZoom is not yet correctly determined
 		if (this._mutant) {
-			const center = this._map.getCenter(),
+			const center = center || this._map.getCenter(),
 				_center = new google.maps.LatLng(center.lat, center.lng),
 				zoom = Math.round(this._map.getZoom()),
 				mutantZoom = this._mutant.getZoom();
@@ -458,7 +458,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 			}
 		}
 
-		L.GridLayer.prototype._update.call(this);
+		L.GridLayer.prototype._update.call(this, center);
 	},
 
 	_resize: function () {
