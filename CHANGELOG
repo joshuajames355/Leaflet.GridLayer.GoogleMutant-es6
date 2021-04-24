@@ -1,3 +1,9 @@
+# v0.13.0 (2021-04-24)
+
+* Implemented `whenReady` method (by @johnd0e)
+* Removed `Promise` dependency (by @johnd0e)
+* Fixed a regression tiles not loading on fractional zoom (due to cleanup of _resize())
+
 # v0.12.1
 
 * Rebuilt; dist script should be up-to-date in CDNs.
