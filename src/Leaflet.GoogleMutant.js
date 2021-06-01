@@ -135,6 +135,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 			);
 			this._mutantContainer.id = "_MutantContainer_" + L.Util.stamp(this._mutantContainer);
 			this._mutantContainer.style.pointerEvents = "none";
+			this._mutantContainer.style.visibility = "hidden";
 
 			L.DomEvent.off(this._mutantContainer);
 		}
@@ -245,16 +246,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 						node.querySelectorAll("img"),
 						this._boundOnMutatedImage
 					);
-					// Check for, and remove, the "Google Maps can't load correctly" div.
-					// You *are* loading correctly, you dumbwit.
-					if (node.style.backgroundColor === "white") {
-						L.DomUtil.remove(node);
-					}
-
-					// Check for, and remove, the "For development purposes only" divs on the aerial/hybrid tiles.
-					if (node.textContent.indexOf("For development purposes only") === 0) {
-						L.DomUtil.remove(node);
-					}
 				}
 			}
 		}
@@ -303,7 +294,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		if (coords) {
 			var tileKey = this._tileCoordsToKey(coords);
 			imgNode.style.position = "absolute";
-			imgNode.style.visibility = "hidden";
 
 			var key = tileKey + "/" + sublayer;
 			// Cache img so it can also be used in subsequent tile requests
@@ -314,8 +304,6 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 				this._tileCallbacks[key].forEach((callback) => callback(imgNode));
 				delete this._tileCallbacks[key];
 			}
-		} else if (imgNode.src.match(this._staticRegExp)) {
-			imgNode.style.visibility = "hidden";
 		}
 	},
 
