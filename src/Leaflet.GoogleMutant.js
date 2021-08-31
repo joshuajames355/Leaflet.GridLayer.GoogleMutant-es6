@@ -31,7 +31,7 @@ function waitForAPI(callback, context) {
 
 // 🍂class GridLayer.GoogleMutant
 // 🍂extends GridLayer
-L.GridLayer.GoogleMutant = L.GridLayer.extend({
+export var GoogleMutant = L.GridLayer.extend({
 	options: {
 		maxZoom: 21, // can be 23, but ugly if more than maxNativeZoom
 		// 🍂option type: String = 'roadmap'
@@ -409,9 +409,3 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		return this;
 	},
 });
-
-// 🍂factory gridLayer.googleMutant(options)
-// Returns a new `GridLayer.GoogleMutant` given its options
-L.gridLayer.googleMutant = function (options) {
-	return new L.GridLayer.GoogleMutant(options);
-};
